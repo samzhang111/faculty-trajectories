@@ -2,9 +2,13 @@ import itertools
 from collections import defaultdict
 
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from scipy import stats
+from scipy.optimize import minimize_scalar
+
 
 colors = ['#EF476F', '#118AB2', '#06D6A0', '#073B4C', '#FFD166']
 lighter_colors = ["#FFACBB", "#33ACD4"]
@@ -74,3 +78,51 @@ def hazard_from_runlengths(runlengths):
         zerohazard_variances[observed - 1] = phat*(1-phat)/N
 
     return zerohazard_counts, zerohazard, zerohazard_variances
+
+def enable_matplotlib_latex():
+    plt.rcParams.update({
+        "text.usetex": True,
+        "text.latex.preamble": r"\usepackage{amsmath}",
+    })
+
+def disable_matplotlib_latex():
+    plt.rcParams.update({
+        "text.usetex": False,
+    })
+
+
+def trunclaplace_negloglike(alpha, xs, ms):
+    xs = np.array(xs)
+    ms = np.array(ms)
+
+    a = np.abs(xs - ms).sum()
+    b = np.log(2 - np.exp(-ms/alpha)).sum()
+
+    return len(xs)*np.log(alpha) + a/alpha + b
+
+
+def fit_trunc_laplace(data, ms):
+    result = minimize_scalar(trunclaplace_negloglike, args=(data, ms), bounds=[0, 500], method='Bounded')
+    return result.x
+
+
+def find_mode(vals, bins=50):
+    counts, bars = np.histogram(vals, bins=bins)
+    i = np.argmax(counts)
+    mode = (bars[i] + bars[i+1])/2
+
+    return mode
+
+
+def plot_laplace_fit(ax, data, label, color, lw=5, linestyle="-"):
+    mode = find_mode(data)
+    alpha = fit_trunc_laplace(data, mode)
+    rv = stats.laplace(loc=mode, scale=alpha)
+    x = np.linspace(-25, 25, 100)
+    plotted = ax.plot(x, rv.pdf(x), lw=lw, label=f'\\begin{{align*}}{label}\\widehat{{\\alpha}}&={align_and_format(alpha)} \\\\ \\widehat{{\\mu}}&={align_and_format(mode)}\\end{{align*}}', color=color, linestyle=linestyle)
+    ax.semilogy()
+    return plotted, alpha, mode
+
+
+def align_and_format(x):
+    return f"{x:.2f}"
