@@ -15,7 +15,7 @@ write:
 	cd write && make
 
 scaffold:
-	mkdir -p import/output fit/output simulate/output write/output write/input
+	mkdir -p import/input import/output fit/output simulate/output write/output write/input
 	-cd fit && ln -s ../import/output input 
 	-cd simulate && ln -s ../fit/output input
 	-cd write/input && ln -s ../../simulate/output simulate

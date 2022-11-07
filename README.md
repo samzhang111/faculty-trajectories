@@ -10,6 +10,7 @@ For documentation purposes, we've included the directory `note`, which contains 
 
 1. Install the python requirements (`pip install -r requirements.txt`).
 2. Run `make scaffold` to scaffold the imports and outputs of the repository.
+3. Place the raw data file `adjusted_productivity.csv` into `import/input`.
 
 ## Running
 
