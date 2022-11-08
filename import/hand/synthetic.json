@@ -1,0 +1,31 @@
+{
+    "N": 3000,
+    "trajectories": [
+        {
+            "name": "bend",
+            "alpha_q0": 0.8,
+            "parameters":[
+                {"cutoffs": [10], "cutoff_start": 0, "alpha": 3, "mode_beta": 0.8},
+                {"cutoffs": [10], "cutoff_start": 10, "alpha": 1.1, "mode_beta": 1}
+            ]
+        },
+        {
+            "name": "swoop",
+            "alpha_q0": 10,
+            "parameters": [
+                {"cutoffs": [15], "cutoff_start": 0, "alpha": 5, "mode_beta": 0.8},
+                {"cutoffs": [15], "cutoff_start": 15, "alpha": 3, "mode_beta": 1.1}
+            ]
+        },
+        {
+            "name": "realistic",
+            "alpha_q0": 4.5,
+            "parameters": [
+                {"cutoffs": [4, 7, 13], "cutoff_start": 0, "alpha": 4.5, "mode_beta": 0.81},
+                {"cutoffs": [4, 7, 13], "cutoff_start": 4, "alpha": 4.3, "mode_beta": 0.73},
+                {"cutoffs": [4, 7, 13], "cutoff_start": 7, "alpha": 3.8, "mode_beta": 0.73},
+                {"cutoffs": [4, 7, 13], "cutoff_start": 13, "alpha": 3.5, "mode_beta": 0.75}
+            ]
+        }
+    ]
+}
