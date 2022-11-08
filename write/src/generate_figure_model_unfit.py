@@ -94,6 +94,8 @@ ci_emp = wald_interval_95(p_emp, n_emp)
 sns.histplot(rounded_emp, label='Empirical', stat="probability", color=lighter_colors[0], binwidth=1, alpha=0.8, linewidth=1.5, ax=ax)
 sns.histplot(rounded_sim, label='Simulated', stat="probability", color=lighter_colors[1], binwidth=1, alpha=0.6, linewidth=1.5, ax=ax, hatch=hatch)
 
+print(f"P(zero) in simulated: {p_sim:.2f}\nP(zero) in emp: {p_emp:.2f}")
+
 ax.errorbar(x=0.5, y=p_emp, yerr=ci_emp[1] - p_emp, color="black", capsize=4, elinewidth=3, capthick=2)
 ax.errorbar(x=0.5, y=p_sim, yerr=ci_sim[1] - p_sim, color="black", capsize=4, elinewidth=3, capthick=2)
 
