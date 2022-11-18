@@ -29,4 +29,5 @@ with open(args.outpickle, "wb") as out:
     pickle.dump({
         'trajs': trajs,
         'df_trajs': df_trajs,
+        'cutoffs': mle_cutoffs,
     }, out)
