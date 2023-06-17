@@ -4,6 +4,7 @@ import itertools
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 from matplotlib.ticker import MaxNLocator, PercentFormatter
 import seaborn as sns
 from scipy import stats
@@ -13,6 +14,14 @@ from plot_helpers import *
 init_plot()
 
 sns.color_palette(colors + lighter_colors)
+
+
+def find_mode(vals, bins=100):
+    counts, bars = np.histogram(vals, bins=bins)
+    i = np.argmax(counts)
+    mode = (bars[i] + bars[i+1])/2
+
+    return mode
 
 #######################################
 # Load data
@@ -63,20 +72,45 @@ ax = axes[0][0]
 ax.annotate("A.", (-0.2, 0.95), xycoords="axes fraction", fontsize=24)
 
 lw = 3
-sns.kdeplot(df_traj_full.groupby('dblp_id').pubs_adj.std(), label='Empirical', ax=ax, color=colors[0], lw=lw)
+emp = df_traj_full.groupby('dblp_id').pubs_adj.std()
+sim = df_trajs_sim.groupby('ix').pubs_adj.std()
+sns.kdeplot(emp, label=None, ax=ax, color=colors[0], lw=lw)
 sns.kdeplot(df_traj_full[np.floor(df_traj_full.pubs_adj) > 0].groupby('dblp_id').pubs_adj.std(), label='Empirical (no zeros)', ax=ax, color=colors[0], linestyle=':', lw=lw)
-sns.kdeplot(df_trajs_sim.groupby('ix').pubs_adj.std(), label='Simulated', ax=ax, color=colors[1], lw=lw)
+sns.kdeplot(sim, label=None, ax=ax, color=colors[1], lw=lw)
 sns.kdeplot(df_trajs_sim[np.floor(df_traj_all.pubs_adj) > 0].groupby('ix').pubs_adj.std(), label='Simulated (no zeros)', ax=ax, color=colors[1], linestyle=":", lw=lw)
 ax.set_xlim([0, 15])
+
+emp_mode = find_mode(emp.values)
+sim_mode = find_mode(sim.values)
 
 ax.set_xlabel("Career std. dev. of annual productivity, $\sigma$")
 ax.yaxis.set_ticklabels([])
 ax.set_ylabel("Density\n\n")
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax.legend(frameon=False, loc='upper right')
 ax.text(8, 0.12, f"Empirical vs. simulated:\nKS$={ks_test.statistic:.2f}$ (${print_pval(ks_test.pvalue)}$)", fontsize=14)
 
 
+ax.axvline(emp_mode, color=colors[0], lw=2)
+ax.axvline(sim_mode, color=colors[1], lw=2)
+ax.scatter(emp_mode, 0, marker='x', s=100, color=colors[0], zorder=10, clip_on=False)
+ax.scatter(sim_mode, 0, marker='o', s=100, color=colors[1], zorder=10, clip_on=False)
+
+emp_legend = mlines.Line2D([], [], color=colors[0], marker='x',
+                          markersize=10, label='Empirical')
+
+sim_legend = mlines.Line2D([], [], color=colors[1], marker='o',
+                          markersize=10, label='Simulated')
+
+emp_legend_no_zeros = mlines.Line2D([], [], color=colors[0], linestyle=':',
+                          label='Empirical (no zeros)')
+
+sim_legend_no_zeros = mlines.Line2D([], [], color=colors[1], linestyle=':',
+                          label='Simulated (no zeros)')
+
+ax.legend(handles=[emp_legend, emp_legend_no_zeros,
+                   sim_legend, sim_legend_no_zeros],
+          frameon=False, loc='upper right')
+#ax.legend(frameon=False, loc='upper right')
 
 ax = axes[0][1]
 ax.annotate("B.", (-0.2, 0.95), xycoords="axes fraction", fontsize=24)

@@ -134,7 +134,7 @@ def sample_trunc_laplace_resample_list(loc, scale, trunc):
             resampled = stats.laplace(scale=scale, loc=loc).rvs()
 
         result[to_resample] = resampled
-        to_resample = np.where(result < 0)[0]
+        to_resample = np.where(result < trunc)[0]
 
     return result
 
@@ -153,7 +153,7 @@ def sample_trunc_laplace(loc, scale, trunc):
     return result
 
 
-def simulate_trajectories_using_fixed_mode(params, alpha_q0, global_mode, n=10000):
+def simulate_trajectories_using_fixed_mode(params, alpha_q0, global_mode, n=10000, Y=20):
     """
     draw q0 from exp(alpha_q0)
 
@@ -173,7 +173,7 @@ def simulate_trajectories_using_fixed_mode(params, alpha_q0, global_mode, n=1000
     current_params = params[career_stage]
     career_stages = sorted([x['cutoff_start'] for x in params])[1:] + [np.inf,]
 
-    for year in range(20):
+    for year in range(Y):
         next_cutoff = first_above_k(career_stages, year)
         if next_cutoff > career_stages[career_stage]:
             career_stage += 1
@@ -181,7 +181,7 @@ def simulate_trajectories_using_fixed_mode(params, alpha_q0, global_mode, n=1000
 
         mode = np.maximum(q_last + global_mode, 0)
 
-        q_next = sample_trunc_laplace_resample_list(mode, current_params['alpha'], -q_last)
+        q_next = sample_trunc_laplace_resample_list(mode, current_params['alpha'], 0)
         trajectories.append(q_next)
         q_last = q_next
 
@@ -218,7 +218,7 @@ def simulate_trajectories_using_mode_regression(params, alpha_q0, n=10000, globa
         else:
             mode = q_last * current_params['mode_beta']
 
-        q_next = sample_trunc_laplace_resample_list(mode, current_params['alpha'], -q_last)
+        q_next = sample_trunc_laplace_resample_list(mode, current_params['alpha'], 0)
         trajectories.append(q_next)
         q_last = q_next
 
