@@ -1,6 +1,6 @@
-# Changes in variance explain scientific productivity patterns across career stages
+# Scientific productivity as a random walk
 
-This is code to accompany the manuscript "Changes in variance explain scientific productivity patterns across career stages" (forthcoming), joint work with Nicholas LaBerge, Daniel B. Larremore, and Aaron Clauset.
+This is code to accompany the manuscript "Scientific productivity as a random walk" (forthcoming), joint work with Nicholas LaBerge, Samuel F. Way, Daniel B. Larremore, and Aaron Clauset.
 
 This repository is structured in line with the [principled data processing](https://hrdag.org/2016/06/14/the-task-is-a-quantum-of-workflow/) workflow, so that it is broken down into decomposable and reproducible tasks. When a task depends on the output from a previous task, we use symlinks to join them.
 
