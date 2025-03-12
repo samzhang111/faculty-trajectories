@@ -80,8 +80,8 @@ sns.kdeplot(sim, label=None, ax=ax, color=colors[1], lw=lw)
 sns.kdeplot(df_trajs_sim[np.floor(df_traj_all.pubs_adj) > 0].groupby('ix').pubs_adj.std(), label='Simulated (no zeros)', ax=ax, color=colors[1], linestyle=":", lw=lw)
 ax.set_xlim([0, 15])
 
-emp_mode = find_mode(emp.values)
-sim_mode = find_mode(sim.values)
+#emp_mode = find_mode(emp.values)
+#sim_mode = find_mode(sim.values)
 
 ax.set_xlabel("Career std. dev. of annual productivity, $\sigma$")
 ax.yaxis.set_ticklabels([])
@@ -90,15 +90,15 @@ ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.text(8, 0.12, f"Empirical vs. simulated:\nKS$={ks_test.statistic:.2f}$ (${print_pval(ks_test.pvalue)}$)", fontsize=14)
 
 
-ax.axvline(emp_mode, color=colors[0], lw=2)
-ax.axvline(sim_mode, color=colors[1], lw=2)
-ax.scatter(emp_mode, 0, marker='x', s=100, color=colors[0], zorder=10, clip_on=False)
-ax.scatter(sim_mode, 0, marker='o', s=100, color=colors[1], zorder=10, clip_on=False)
+#ax.axvline(emp_mode, color=colors[0], lw=2)
+#ax.axvline(sim_mode, color=colors[1], lw=2)
+#ax.scatter(emp_mode, 0, marker='x', s=100, color=colors[0], zorder=10, clip_on=False)
+#ax.scatter(sim_mode, 0, marker='o', s=100, color=colors[1], zorder=10, clip_on=False)
 
-emp_legend = mlines.Line2D([], [], color=colors[0], marker='x',
+emp_legend = mlines.Line2D([], [], color=colors[0],# marker='x',
                           markersize=10, label='Empirical')
 
-sim_legend = mlines.Line2D([], [], color=colors[1], marker='o',
+sim_legend = mlines.Line2D([], [], color=colors[1],# marker='o',
                           markersize=10, label='Simulated')
 
 emp_legend_no_zeros = mlines.Line2D([], [], color=colors[0], linestyle=':',
@@ -155,22 +155,33 @@ ax.yaxis.grid(linewidth=1)
 
 ax = axes[1][1]
 ax.annotate("D.", (-0.2, 0.95), xycoords="axes fraction", fontsize=24)
-ax.bar(
-    range(1, 15),
-    [hazard_counts_emp_full[i]['N'] + hazard_counts_emp_full[i]['Y'] for i in range(1, 15)],
-    align='edge', label='Empirical', color=lighter_colors[0], linewidth=1.8, alpha=0.8, edgecolor='black', width=1,
-)
+# Compute empirical survival function
+empirical_survival = []
+total_count_emp = sum(hazard_counts_emp_full[i]['N'] + hazard_counts_emp_full[i]['Y'] for i in range(1, 15))
+cumulative_count_emp = 0
 
-ax.bar(
-    range(1, 15),
-    [640/3000 * (hazard_counts_sim[i]['N'] + hazard_counts_sim[i]['Y']) for i in range(1, 15)],
-    align='edge', label='Simulated', hatch=hatch, color=lighter_colors[1], linewidth=1.8, alpha=0.6, edgecolor='black', width=1
-)
+for i in range(1, 15):
+    cumulative_count_emp += hazard_counts_emp_full[i]['N'] + hazard_counts_emp_full[i]['Y']
+    empirical_survival.append(1 - cumulative_count_emp / total_count_emp)
 
-ax.semilogy()
+# Compute simulated survival function
+simulated_survival = []
+total_count_sim = sum(hazard_counts_sim[i]['N'] + hazard_counts_sim[i]['Y'] for i in range(1, 15))
+cumulative_count_sim = 0
+
+for i in range(1, 15):
+    cumulative_count_sim += hazard_counts_sim[i]['N'] + hazard_counts_sim[i]['Y']
+    simulated_survival.append(1 - cumulative_count_sim / total_count_sim)
+
+# Plot survival functions
+ax.plot(range(1, 15), empirical_survival, label='Empirical', color=lighter_colors[0], linewidth=2)
+ax.plot(range(1, 15), simulated_survival, label='Simulated', linestyle='dashed', color=lighter_colors[1], linewidth=2)
+
+ax.set_yscale("log")
 ax.set_xlabel("Zeros per trajectory")
-ax.set_ylabel("Counts")
-ax.annotate(f"$N={df_traj_full.dblp.nunique()}$ trajectories each", (0.5, 0.8), xycoords="axes fraction", fontsize=14)
+ax.set_ylabel("Survival Probability")
+ax.legend(frameon=False)
+ax.annotate(f"$N={df_traj_full.dblp.nunique()}$ trajectories each", (0.5, 0.7), xycoords="axes fraction", fontsize=14)
 
 sns.despine()
 
