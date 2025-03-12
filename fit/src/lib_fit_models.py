@@ -4,7 +4,6 @@ import pandas as pd
 from scipy.optimize import minimize_scalar
 from scipy import stats
 from sklearn.neighbors import KernelDensity
-from scipy.stats import laplace
 
 # A superset of the methods used in the analysis:
 # some of these may be redundant.
@@ -107,8 +106,8 @@ def negloglik_l2_regression(beta, xs, ys):
 def negloglik_l1_regression(beta, xs, ys):
     yhat = beta*xs
     residuals = ys - yhat
-    alpha = laplace.fit(residuals, floc=0)[1]
-    rv = laplace(loc=0, scale=alpha)
+    alpha = stats.laplace.fit(residuals, floc=0)[1]
+    rv = stats.laplace(loc=0, scale=alpha)
 
     return -sum([rv.logpdf(res) for res in residuals])
 

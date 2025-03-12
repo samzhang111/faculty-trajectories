@@ -9,7 +9,9 @@ df_pubs = df_pubs.sort_values(by=['dblp_id', 'year'])
 # Create some useful variables for downstream
 df_pubs['pubs_adj_round'] = df_pubs.pubs_adj.round()
 df_pubs['pubs_adj_next'] = df_pubs.groupby(['dblp_id']).pubs_adj.shift(periods=-1)
+df_pubs['pubs_adj_next2'] = df_pubs.groupby(['dblp_id']).pubs_adj.shift(periods=-2)
 df_pubs['q_adj_delta'] = df_pubs.pubs_adj_next - df_pubs.pubs_adj
+df_pubs['q_adj_next_delta'] = df_pubs.pubs_adj_next2 - df_pubs.pubs_adj_next
 df_pubs['cumpubs'] = df_pubs.groupby(['dblp_id']).pubs_adj.cumsum()
 df_pubs['YearSinceDegree'] = df_pubs['year'] - df_pubs['phd_year']
 
