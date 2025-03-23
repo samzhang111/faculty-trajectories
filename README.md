@@ -19,3 +19,8 @@ Run `make` in the root repository. To run any specific task, change into that di
 ## Data
 
 For ease of replicability, we include the data in `import/input/adjusted_productivities.csv`. This data is directly taken from [Way, Morgan, Clauset, and Larremore (2017)](https://www.pnas.org/doi/full/10.1073/pnas.1702121114), with slightly stricter inclusion criteria (see paper).
+
+## Miscellaneous
+Software was developed and tested on Python 3.11. Typical install times depend on user environment, ranging from 30 seconds to 10 minutes.
+
+
