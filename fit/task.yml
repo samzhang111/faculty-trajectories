@@ -1,0 +1,3 @@
+name: fit
+entrypoint: 'make'
+subtasks: []
